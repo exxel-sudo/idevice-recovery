@@ -1,0 +1,357 @@
+<Window x:Class="iDeviceRecovery.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:iDeviceRecovery"
+        Title="iDevice Recovery" Width="1140" Height="760" MinWidth="960" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}"
+        FontFamily="{StaticResource UiFont}" FontSize="13"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="44" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1"
+                      CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Border x:Name="Root">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ======================= Titelrad ======================= -->
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+                    <Border Width="26" Height="26" CornerRadius="7" Background="{StaticResource LogoBrush}">
+                        <TextBlock Text="&#xE8EA;" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="iDevice Recovery" FontWeight="SemiBold" FontSize="14" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="VersionText" Text="v1.0" Foreground="{StaticResource MutedBrush}" FontSize="11"
+                               Margin="8,1,0,0" VerticalAlignment="Center"/>
+
+                    <Button x:Name="DriverPill" Margin="18,0,0,0" Click="DriverPill_Click"
+                            WindowChrome.IsHitTestVisibleInChrome="True" Cursor="Hand" FocusVisualStyle="{x:Null}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" CornerRadius="11" Padding="10,3" Background="{TemplateBinding Background}">
+                                    <ContentPresenter/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse x:Name="DriverDot" Width="7" Height="7" Fill="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="DriverText" Text="Kontrollerar drivrutin…" FontSize="11.5" Margin="7,0,0,0"
+                                       Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border CornerRadius="8" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" Padding="2" Margin="0,7,10,0" VerticalAlignment="Top"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE774;" FontFamily="{StaticResource IconFont}" FontSize="12"
+                                       Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="8,0,6,0"/>
+                            <Button x:Name="LangSv" Style="{StaticResource BtnBase}" Content="SV" Padding="10,3" FontSize="11.5"
+                                    Click="LangSv_Click" ToolTip="Svenska" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                            <Button x:Name="LangEn" Style="{StaticResource BtnBase}" Content="EN" Padding="10,3" FontSize="11.5"
+                                    Click="LangEn_Click" ToolTip="English" WindowChrome.IsHitTestVisibleInChrome="True" Margin="2,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Button Style="{StaticResource TitleBarButton}" Content="&#xE921;" Click="Min_Click"
+                            WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Button x:Name="MaxButton" Style="{StaticResource TitleBarButton}" Content="&#xE922;" Click="Max_Click"
+                            WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" Click="Close_Click"
+                            WindowChrome.IsHitTestVisibleInChrome="True"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ======================= Innehåll ======================= -->
+            <Grid Grid.Row="1" Margin="20,6,20,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="18"/>
+                    <ColumnDefinition Width="390"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Vänster kolumn -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="18"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Auto-läge -->
+                    <Border Style="{StaticResource Card}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Width="48" Height="48" CornerRadius="12" Background="#22F0A431" VerticalAlignment="Top">
+                                <TextBlock Text="&#xE72C;" FontFamily="{StaticResource IconFont}" FontSize="22" Foreground="#F0A431"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="16,0,16,0">
+                                <TextBlock Text="{Binding [AutoTitle], Source={x:Static l:Loc.Instance}}" Style="{StaticResource H1}"/>
+                                <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                                           Text="{Binding [AutoDesc], Source={x:Static l:Loc.Instance}}"/>
+                                <CheckBox x:Name="OnceToggle" Style="{StaticResource ToggleSwitch}" IsChecked="True" Margin="0,14,0,0">
+                                    <TextBlock Text="{Binding [Once], Source={x:Static l:Loc.Instance}}" FontSize="12.5"/>
+                                </CheckBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                <CheckBox x:Name="AutoToggle" Style="{StaticResource ToggleSwitch}" IsChecked="False"
+                                          Checked="AutoToggle_Changed" Unchecked="AutoToggle_Changed" HorizontalAlignment="Right">
+                                    <TextBlock x:Name="AutoLabel" Text="AV" FontWeight="Bold" FontSize="13" Width="26"/>
+                                </CheckBox>
+                                <TextBlock x:Name="SentCounter" Text="0 skickade" Style="{StaticResource Muted}"
+                                           HorizontalAlignment="Right" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Enheter -->
+                    <Border Grid.Row="2" Style="{StaticResource Card}" Padding="20,16,12,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Margin="0,0,8,12">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding [Devices], Source={x:Static l:Loc.Instance}}" Style="{StaticResource H1}" FontSize="16"/>
+                                    <Border CornerRadius="9" Background="{StaticResource Surface3Brush}" Padding="8,1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock x:Name="DeviceCount" Text="0" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}"/>
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Style="{StaticResource GhostButton}" Click="ExitAnyRecovery_Click" Margin="0,0,4,0"
+                                        ToolTip="{Binding [ExitAnyTip], Source={x:Static l:Loc.Instance}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE7E8;" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding [ExitAny], Source={x:Static l:Loc.Instance}}" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Style="{StaticResource GhostButton}" Click="Refresh_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE72C;" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding [Rescan], Source={x:Static l:Loc.Instance}}" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                                </StackPanel>
+                            </Grid>
+
+                            <ListBox x:Name="DeviceList" Grid.Row="1" Style="{StaticResource PlainList}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="12" Background="{StaticResource Surface2Brush}" Padding="14,12" Margin="0,0,8,8">
+                                            <Border.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="{Binding [CopyUdid], Source={x:Static l:Loc.Instance}}" Click="CopyUdid_Click"/>
+                                                    <MenuItem Header="{Binding [CopyEcid], Source={x:Static l:Loc.Instance}}" Click="CopyEcid_Click"/>
+                                                </ContextMenu>
+                                            </Border.ContextMenu>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Width="42" Height="42" CornerRadius="10" Background="{Binding ModeSoftBrush}">
+                                                    <TextBlock Text="&#xE8EA;" FontFamily="{StaticResource IconFont}" FontSize="20"
+                                                               Foreground="{Binding ModeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel Grid.Column="1" Margin="14,0,10,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Detail}" FontSize="12" Foreground="{StaticResource MutedBrush}"
+                                                               Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Status}" FontSize="12" Foreground="{Binding ModeBrush}" Margin="0,3,0,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding HasStatus}" Value="False">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <Border Grid.Column="2" CornerRadius="10" Padding="9,3" Margin="0,0,12,0"
+                                                        Background="{Binding ModeSoftBrush}" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding ModeLabel}" FontSize="10.5" FontWeight="Bold" Foreground="{Binding ModeBrush}"/>
+                                                </Border>
+                                                <Button Grid.Column="3" Style="{StaticResource BtnBase}" Content="{Binding ActionText}"
+                                                        IsEnabled="{Binding ActionEnabled}" Click="DeviceAction_Click" MinWidth="136"
+                                                        VerticalAlignment="Center">
+                                                    <Button.Visibility>
+                                                        <Binding Path="HasAction">
+                                                            <Binding.Converter>
+                                                                <BooleanToVisibilityConverter/>
+                                                            </Binding.Converter>
+                                                        </Binding>
+                                                    </Button.Visibility>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <!-- Tomt läge -->
+                            <StackPanel x:Name="EmptyState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,20">
+                                <Border Width="72" Height="72" CornerRadius="36" Background="{StaticResource Surface2Brush}" HorizontalAlignment="Center">
+                                    <TextBlock Text="&#xE88E;" FontFamily="{StaticResource IconFont}" FontSize="30"
+                                               Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{Binding [EmptyTitle], Source={x:Static l:Loc.Instance}}" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,14,0,0"/>
+                                <TextBlock Text="{Binding [EmptyDesc], Source={x:Static l:Loc.Instance}}" Style="{StaticResource Muted}"
+                                           HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Höger kolumn: DFU-guide -->
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding [DfuTitle], Source={x:Static l:Loc.Instance}}" Style="{StaticResource H1}"/>
+                                <Border CornerRadius="9" Background="#22B07CFF" Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding [DfuBadge], Source={x:Static l:Loc.Instance}}" FontSize="10" FontWeight="Bold" Foreground="#B07CFF"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                                       Text="{Binding [DfuDesc], Source={x:Static l:Loc.Instance}}"/>
+                        </StackPanel>
+
+                        <!-- Modellval -->
+                        <StackPanel x:Name="ModelPanel" Grid.Row="1" Margin="0,16,0,0">
+                            <TextBlock Text="{Binding [Model], Source={x:Static l:Loc.Instance}}" Style="{StaticResource Label}" Margin="2,0,0,8"/>
+                            <RadioButton x:Name="Family0" Style="{StaticResource ChoiceCard}" GroupName="fam" IsChecked="True">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding [Fam0], Source={x:Static l:Loc.Instance}}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding [Fam0Sub], Source={x:Static l:Loc.Instance}}" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="Family1" Style="{StaticResource ChoiceCard}" GroupName="fam">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding [Fam1], Source={x:Static l:Loc.Instance}}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding [Fam1Sub], Source={x:Static l:Loc.Instance}}" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="Family2" Style="{StaticResource ChoiceCard}" GroupName="fam">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding [Fam2], Source={x:Static l:Loc.Instance}}" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding [Fam2Sub], Source={x:Static l:Loc.Instance}}" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+
+                        <!-- Nedräkning + steg -->
+                        <Grid Grid.Row="2" Margin="0,8,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Width="132" Height="132" HorizontalAlignment="Center">
+                                <Grid.LayoutTransform>
+                                    <ScaleTransform x:Name="RingScale" ScaleX="0.85" ScaleY="0.85"/>
+                                </Grid.LayoutTransform>
+                                <Ellipse Stroke="{StaticResource Surface3Brush}" StrokeThickness="8" Margin="4"/>
+                                <Path x:Name="RingArc" Stroke="{StaticResource AccentBrush}" StrokeThickness="8"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock x:Name="CountText" Text="–" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="CountUnit" Text="redo" FontSize="11" Foreground="{StaticResource MutedBrush}"
+                                               HorizontalAlignment="Center" Margin="0,-4,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Grid.Row="1" Margin="0,10,0,10">
+                                <TextBlock x:Name="StepTitle" Text="Välj modell och tryck Starta" Style="{StaticResource Label}" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="StepText" Text="Koppla in telefonen med USB-kabel först."
+                                           FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,0"/>
+                            </StackPanel>
+                            <ScrollViewer x:Name="StepsScroll" Grid.Row="2" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                            <ItemsControl x:Name="StepsList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,7">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="20" Height="20" CornerRadius="10" Background="{Binding DotBrush}" VerticalAlignment="Top">
+                                                <TextBlock Text="{Binding DotText}" FontSize="10.5" FontWeight="Bold" Foreground="{Binding DotForeground}"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="{Binding Text}" Foreground="{Binding TextBrush}" FontSize="12.5"
+                                                       TextWrapping="Wrap" Margin="10,1,8,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Duration}" Foreground="{StaticResource MutedBrush}" FontSize="11.5" Margin="0,2,0,0"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- Resultat -->
+                        <Border x:Name="ResultBanner" Grid.Row="3" CornerRadius="10" Padding="12,10" Margin="0,6,0,10" Visibility="Collapsed">
+                            <TextBlock x:Name="ResultText" TextWrapping="Wrap" FontSize="12.5" FontWeight="SemiBold"/>
+                        </Border>
+
+                        <Button x:Name="DfuButton" Grid.Row="4" Style="{StaticResource PrimaryButton}" Padding="14,11" FontSize="14"
+                                Click="DfuButton_Click" Content="Starta DFU-guiden"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- ======================= Logg ======================= -->
+            <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+                <Grid Height="132">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="20,8,14,2">
+                        <TextBlock Text="{Binding [Log], Source={x:Static l:Loc.Instance}}" Style="{StaticResource Label}" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource GhostButton}" Content="{Binding [Copy], Source={x:Static l:Loc.Instance}}" Click="CopyLog_Click" Padding="8,3"/>
+                            <Button Style="{StaticResource GhostButton}" Content="{Binding [Clear], Source={x:Static l:Loc.Instance}}" Click="ClearLog_Click" Padding="8,3"/>
+                        </StackPanel>
+                    </Grid>
+                    <ListBox x:Name="LogList" Grid.Row="1" Style="{StaticResource PlainList}" Margin="20,0,6,8">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,1">
+                                    <TextBlock Text="{Binding Time}" Foreground="#5C6375" FontFamily="Cascadia Mono, Consolas" FontSize="12" Width="70"/>
+                                    <TextBlock Text="{Binding Text}" Foreground="{Binding Brush}" FontFamily="Cascadia Mono, Consolas" FontSize="12" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

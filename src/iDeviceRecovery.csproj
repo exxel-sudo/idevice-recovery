@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>iDeviceRecovery</RootNamespace>
+    <AssemblyName>iDeviceRecovery</AssemblyName>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>iDevice Recovery</Product>
+    <Description>Sätter iPhone i Recovery automatiskt och guidar till DFU</Description>
+  </PropertyGroup>
+
+  <!-- Portabel: en enda exe, inget .NET behöver vara installerat -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en;sv</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Native DLL:er bäddas in själva (nedan) och packas upp vid start -->
+    <PackageReference Include="iMobileDevice-net" Version="1.3.17" ExcludeAssets="native;build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="$(NuGetPackageRoot)imobiledevice-net\1.3.17\runtimes\win-x64\native\*.dll"
+                      Exclude="$(NuGetPackageRoot)imobiledevice-net\1.3.17\runtimes\win-x64\native\readline.dll;$(NuGetPackageRoot)imobiledevice-net\1.3.17\runtimes\win-x64\native\getopt.dll"
+                      LogicalName="native/%(Filename)%(Extension)" />
+    <Resource Include="app.ico" />
+  </ItemGroup>
+
+</Project>
